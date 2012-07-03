@@ -20,16 +20,19 @@ private object BuildSbt {
     }
   }
 
-  def apply(plugin: Boolean, org: String, name: String, version: String) =
+  def apply(plugin: Boolean, org: String, name: String, version: String,scalaVersion:String) =
     """%sorganization := "%s"
     |
     |name := "%s"
     |
-    |version %s""".stripMargin.format(
+    |version %s
+    |
+    |scalaVersion :="%s"""".stripMargin.format(
       if(plugin) "sbtPlugin := true\n\n" else "",
       org,
       name,
-      versionBind(version, plugin)
+      versionBind(version, plugin),
+      scalaVersion
     ).trim()
 }
 
@@ -60,7 +63,7 @@ object Plugin extends sbt.Plugin {
     val scout = InputKey[Unit]("scout", "Does a dry run to check for conflicts")
     val usage = TaskKey[Unit]("usage", "Displays np usage info")
   }
-
+  var LANG_TYPE = "scala"
   private def extract(args: Seq[String], pbase: File, defaults: Defaults) = {
 
     val Name  = """name\:(\S+)""".r
@@ -68,26 +71,31 @@ object Plugin extends sbt.Plugin {
     val Org   = """org\:(\S+)""".r
     val Plgin = """plugin\:(\S+)""".r
     val Dir   = """dir\:(\S+)""".r
+    val SVersion= """sversion\:(\S+)""".r
+    val Type= """type\:(\S+)""".r
 
     def first[T](default: T)(pf: PartialFunction[String, T]) =
       args.collect(pf).headOption.getOrElse(default)
 
-    val (p, o, n, v, d) = (
+    val (p, o, n, v, l,d) = (
       first(false) { case Plgin(p) => bool(p) },
       first(defaults.org)   { case Org(o)   => o },
       first(defaults.name)  { case Name(n)  => n },
       first(defaults.version) { case Vers(v)  => v },
+      first(defaults.scalaVersion) { case SVersion(l)  => l },
       first(defaults.dir)   { case Dir(d) => d }
     )
-
-    (BuildSbt(p, o, n, v), d match {
+    
+    LANG_TYPE = first(LANG_TYPE) {case Type(t) => t} 
+    
+    (BuildSbt(p, o, n, v,l), d match {
       case "." => pbase
       case path => new File(pbase, path)
     })
   }
 
   private def configDirs(conf: String)(base: File) =
-    Seq("scala", "resources") map { d =>
+    Seq(LANG_TYPE, "resources") map { d =>
       new File(base, "src/%s/%s".format(conf,d))
     }
 
