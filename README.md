@@ -42,7 +42,7 @@ In most cases a global installation will make the most sense as the target usage
 
 If you have a `~/.sbt` directory created, in a `~/.sbt/plugins/build.sbt` file add the following
 
-    addSbtPlugin("me.lessis" % "np" % "0.2.0")
+    addSbtPlugin("me.lessis" % "np" % "0.2.1")
 
     resolvers += Resolver.url("sbt-plugin-releases",
       url("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases/"))(
@@ -54,7 +54,7 @@ Or if you prefer, you can call depend on the project reference as a `git` reposi
 
     object Plugins extends Build {
       lazy val root = Project("root", file(".")) dependsOn(
-        uri("git://github.com/softprops/np.git#0.2.0")
+        uri("git://github.com/softprops/np.git#0.2.1")
       )
     }
 
