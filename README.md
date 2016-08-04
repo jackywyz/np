@@ -102,3 +102,6 @@ Please post any issues or ideas you have to [np's issues](https://github.com/sof
 If you like rolling up your sleaves, feel free to fork and create a feature branch
 
 Doug Tangren (softprops) 2011-12
+
+## TODO
+- add new options args to project init 
